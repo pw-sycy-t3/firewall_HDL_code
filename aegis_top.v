@@ -49,7 +49,7 @@ endmodule
 
 
 // Glowny modul systemu AEGIS-ZERO
-module aegis_zero_top #(
+module aegis_top #(
     parameter BLOOM_ADDR_WIDTH = 9,
     parameter CUCKOO_ADDR_WIDTH = 8
 )(
