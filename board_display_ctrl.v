@@ -12,8 +12,8 @@ module board_display_ctrl (
     input [31:0] stat_allowed,
     
     // Fizyczne piny na płytce
-    output reg [6:0] seg, // Segmenty A-G (aktywne zerem)
-    output reg [7:0] an   // Anody wyswietlacza (aktywne zerem)
+    output reg [6:0] seg,
+    output reg [7:0] an   
 );
 
     // Wybor wyswietlanej statystyki na podstawie przelacznikow
@@ -28,7 +28,7 @@ module board_display_ctrl (
     end
 
     // Dzielnik zegara do odswiezania wyswietlacza (okolo 1 kHz)
-    // Zakladajac zegar np. 100MHz z plytki (nie 322MHz z rdzenia Ethernet)
+
     reg [16:0] refresh_counter;
     always @(posedge clk or posedge rst) begin
         if (rst) refresh_counter <= 0;
@@ -53,7 +53,7 @@ module board_display_ctrl (
         endcase
     end
 
-    // Dekoder Hex na 7-segmentowy (Wspolna anoda, czyli 0 wlacza segment)
+    // Dekoder Hex na 7-segmentowy
     always @(*) begin
         case(hex_digit)
             4'h0: seg = 7'b1000000;
@@ -76,7 +76,7 @@ module board_display_ctrl (
         endcase
     end
 
-    // Sterowanie anodami - wlaczamy tylko jedna cyfre w danym momencie
+    
     always @(*) begin
         an = 8'b11111111; 
         an[digit_select] = 1'b0; 
