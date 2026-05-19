@@ -2,7 +2,7 @@
 
 // Prosta kolejka synchroniczna FIFO miedzy warstwami
 module sync_fifo #(
-    parameter DATA_WIDTH = 105,
+    parameter DATA_WIDTH = 104,
     parameter DEPTH_LOG = 4
 )(
     input clk,
@@ -77,7 +77,7 @@ module aegis_top #(
     output cp_l2_ready,
     output cp_l2_fail,
     
-    // Statystyki sprzetowe (Memory-Mapped do odczytu)
+    // Statystyki sprzetowe
     output reg [31:0] stats_packets_in,
     output reg [31:0] stats_l1_drops,
     output reg [31:0] stats_l2_drops,
@@ -111,7 +111,7 @@ module aegis_top #(
     // Sygnaly kolejki FIFO
     wire fifo_full;
     wire fifo_empty;
-    wire [104:0] fifo_dout;
+    wire [103:0] fifo_dout;
     
     wire l1_drop_condition = l1_valid && !l1_match;
     wire l1_pass_condition = l1_valid && l1_match;
@@ -119,13 +119,13 @@ module aegis_top #(
     wire fifo_rd_en = !fifo_empty; 
 
     sync_fifo #(
-        .DATA_WIDTH(105),
+        .DATA_WIDTH(104),
         .DEPTH_LOG(4) // 16 elementow bufora
     ) l1_to_l2_fifo (
         .clk(clk),
         .rst(rst),
         .wr_en(fifo_wr_en),
-        .din({1'b1, dp_tuple_q}), // Zlaczenie bitu Hint (1) oraz klucza
+        .din(dp_tuple_q),
         .rd_en(fifo_rd_en),
         .dout(fifo_dout),
         .empty(fifo_empty),
@@ -135,7 +135,7 @@ module aegis_top #(
     // Sygnaly z Layer 2
     wire l2_match;
     wire l2_valid;
-    wire [103:0] l2_tuple_in = fifo_dout[103:0];
+    wire [103:0] l2_tuple_in = fifo_dout;
 
     cuckoo_lookup_fsm #(
         .ADDR_WIDTH(CUCKOO_ADDR_WIDTH),
