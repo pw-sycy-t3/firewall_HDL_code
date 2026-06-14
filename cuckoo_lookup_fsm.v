@@ -1,5 +1,34 @@
 `timescale 1ns / 1ps
 
+/**
+ * @file
+ * @brief Layer 2 exact-match lookup engine (3-ary Cuckoo hashing) for the AEGIS-ZERO pipeline.
+ */
+
+/**
+ * @brief Layer 2 exact-match lookup engine (3-ary Cuckoo hashing).
+ *
+ * Stores 5-tuples in three independent hash table banks and performs
+ * O(1) exact-match lookups on the data path. The control path FSM
+ * inserts new entries, evicting ("kicking") existing entries between
+ * banks when all three candidate slots are occupied, up to MAX_KICKS
+ * attempts.
+ *
+ * @param ADDR_WIDTH Address width of each hash table bank (entries per bank = 2^ADDR_WIDTH).
+ * @param MAX_KICKS  Maximum number of evictions attempted during insertion before reporting failure.
+ *
+ * @param rst             Asynchronous reset, active high.
+ * @param clk             System clock.
+ * @param ena             Clock enable.
+ * @param dp_tuple_in     Data path: 5-tuple to look up.
+ * @param dp_valid_in     Data path: valid flag for dp_tuple_in.
+ * @param dp_match_out    Data path: 1 if dp_tuple_in was found in any bank.
+ * @param dp_valid_out    Data path: valid flag for dp_match_out.
+ * @param cp_insert_req   Control path: request to insert cp_tuple_in.
+ * @param cp_tuple_in     Control path: 5-tuple to insert.
+ * @param cp_insert_ready Control path: engine ready to accept a new insert request.
+ * @param cp_insert_fail  Control path: insertion failed after MAX_KICKS evictions.
+ */
 module cuckoo_lookup_fsm
 #(
     parameter ADDR_WIDTH = 8,

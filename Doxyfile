@@ -1,0 +1,16 @@
+PROJECT_NAME           = "AEGIS-ZERO HDL"
+PROJECT_BRIEF          = "Hardware firewall pipeline - Verilog source documentation"
+OUTPUT_DIRECTORY       = docs
+INPUT                  = .
+FILE_PATTERNS          = *.v
+EXTENSION_MAPPING      = v=C
+OPTIMIZE_OUTPUT_FOR_C  = YES
+RECURSIVE              = NO
+EXCLUDE_PATTERNS       = tb_*
+EXTRACT_ALL            = YES
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_LATEX         = NO
+HAVE_DOT               = NO
+SOURCE_BROWSER         = YES
+QUIET                  = YES

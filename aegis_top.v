@@ -1,5 +1,34 @@
 `timescale 1ns / 1ps
 
+/**
+ * @file
+ * @brief Top-level AEGIS-ZERO pipeline and the sync_fifo buffer module it uses.
+ *
+ * Contains two modules: sync_fifo, a synchronous FIFO buffer used between
+ * pipeline layers, and aegis_top, the top-level pipeline that integrates
+ * the Layer 1 Bloom filter and Layer 2 Cuckoo hash lookup engine into the
+ * AEGIS-ZERO hardware firewall.
+ */
+
+/**
+ * @brief Simple synchronous FIFO buffer used between pipeline layers.
+ *
+ * Decouples the Layer 1 Bloom filter pre-screening stage from the
+ * Layer 2 Cuckoo hash lookup stage, absorbing timing differences
+ * between the two layers.
+ *
+ * @param DATA_WIDTH Width of each stored data word, in bits.
+ * @param DEPTH_LOG  Log2 of the FIFO depth (number of storage slots).
+ *
+ * @param clk    System clock.
+ * @param rst    Asynchronous reset, active high.
+ * @param wr_en  Write enable.
+ * @param din    Data word to write.
+ * @param rd_en  Read enable.
+ * @param dout   Data word at the head of the FIFO.
+ * @param empty  Asserted when the FIFO holds no data.
+ * @param full   Asserted when the FIFO cannot accept further writes.
+ */
 // Prosta kolejka synchroniczna FIFO miedzy warstwami
 module sync_fifo #(
     parameter DATA_WIDTH = 104,
@@ -48,6 +77,37 @@ module sync_fifo #(
 endmodule
 
 
+/**
+ * @brief Top-level pipeline of the AEGIS-ZERO hardware firewall.
+ *
+ * Integrates the Layer 1 Bloom filter pre-screening stage
+ * (bloom_filter) with the Layer 2 Cuckoo hash lookup engine
+ * (cuckoo_lookup_fsm) through a sync_fifo buffer, and produces the
+ * final accept/drop decision together with hardware traffic counters.
+ *
+ * @param BLOOM_ADDR_WIDTH  Address width of the Layer 1 Bloom filter table.
+ * @param CUCKOO_ADDR_WIDTH Address width of each Layer 2 Cuckoo hash bank.
+ *
+ * @param clk              System clock.
+ * @param rst              Synchronous reset, active high.
+ * @param ena              Global pipeline enable.
+ * @param dp_tuple_in      Incoming 5-tuple (104 bits) from the data path.
+ * @param dp_valid_in      Valid flag for dp_tuple_in.
+ * @param decision_allow   Final verdict: packet is allowed.
+ * @param decision_drop    Final verdict: packet is dropped.
+ * @param decision_valid   Valid flag for the decision outputs.
+ * @param cp_l1_add_en     Control path: enable adding a tuple to the Bloom filter.
+ * @param cp_l1_tuple      Control path: 5-tuple to add to the Bloom filter.
+ * @param cp_l1_valid      Control path: valid flag for cp_l1_tuple.
+ * @param cp_l2_insert_req Control path: request to insert a tuple into the Cuckoo tables.
+ * @param cp_l2_tuple      Control path: 5-tuple to insert into the Cuckoo tables.
+ * @param cp_l2_ready      Control path: Cuckoo insertion engine ready for a new request.
+ * @param cp_l2_fail       Control path: Cuckoo insertion failed (table full).
+ * @param stats_packets_in Hardware counter: total packets received.
+ * @param stats_l1_drops   Hardware counter: packets dropped by Layer 1.
+ * @param stats_l2_drops   Hardware counter: packets dropped by Layer 2.
+ * @param stats_allowed    Hardware counter: packets allowed through.
+ */
 // Glowny modul systemu AEGIS-ZERO
 module aegis_top #(
     parameter BLOOM_ADDR_WIDTH = 9,

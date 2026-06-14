@@ -1,5 +1,28 @@
 `timescale 1ns / 1ps
 
+/**
+ * @file
+ * @brief Seven-segment display controller for AEGIS-ZERO hardware traffic counters.
+ */
+
+/**
+ * @brief Seven-segment display controller for hardware traffic counters.
+ *
+ * Multiplexes one of four 32-bit traffic counters onto an 8-digit
+ * seven-segment display, selected by sw_select and refreshed at
+ * roughly 1 kHz.
+ *
+ * @param clk             System clock.
+ * @param rst             Synchronous reset, active high.
+ * @param sw_select       Selects which counter is displayed
+ *                         (0 = packets in, 1 = L1 drops, 2 = L2 drops, 3 = allowed).
+ * @param stat_packets_in Counter: total packets received.
+ * @param stat_l1_drops   Counter: packets dropped by Layer 1.
+ * @param stat_l2_drops   Counter: packets dropped by Layer 2.
+ * @param stat_allowed    Counter: packets allowed through.
+ * @param seg             Seven-segment cathode pattern, active low.
+ * @param an              Digit anode select, active low (one-hot active digit).
+ */
 module board_display_ctrl (
     input clk,
     input rst,

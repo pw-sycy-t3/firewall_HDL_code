@@ -1,5 +1,29 @@
 `timescale 1ns / 1ps
 
+/**
+ * @file
+ * @brief Layer 1 probabilistic pre-filter (Bloom filter) for the AEGIS-ZERO pipeline.
+ */
+
+/**
+ * @brief Layer 1 probabilistic pre-filter (Bloom filter).
+ *
+ * Implements a Bloom filter using three independent XOR-fold hash
+ * functions over a 5-tuple and a single distributed-RAM bit array.
+ * A negative result guarantees the tuple was never inserted, allowing
+ * the pipeline to drop unknown traffic in a single clock cycle.
+ *
+ * @param ADDR_WIDTH Address width of the bit array (table size = 2^ADDR_WIDTH).
+ *
+ * @param rst       Asynchronous reset, active high.
+ * @param clk       System clock.
+ * @param ena       Clock enable.
+ * @param tuple_in  5-tuple (104 bits) to check or insert.
+ * @param valid_in  Valid flag for tuple_in.
+ * @param add_en    1 = insert tuple_in into the filter, 0 = look up tuple_in.
+ * @param match_out Lookup result: 1 if all three hashed bits are set.
+ * @param valid_out Valid flag for match_out.
+ */
 module bloom_filter
 #(
     parameter ADDR_WIDTH = 9 // 2^9 = 512 bitów
