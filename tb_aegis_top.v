@@ -101,7 +101,7 @@ module tb_aegis_top;
         $display("Odrzucone na L1: %0d", stats_l1_drops);
         $display("Odrzucone na L2: %0d", stats_l2_drops);
         $display("Wpuszczone (ALLOW): %0d", stats_allowed);
-         if (stats_l1_drops == 1 && stats_allowed == 1)
+        if (stats_l1_drops == 1 && stats_allowed == 1)
             $display("[SCOREBOARD] Weryfikacja pomyslna: PASS");
         else
             $display("[SCOREBOARD] Weryfikacja niepomyslna: FAIL");
